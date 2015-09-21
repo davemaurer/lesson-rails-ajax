@@ -65,10 +65,11 @@
 //};
 
 $(document).ready(function() {
-  fetchPost()
-  fetchPostsButton()
-  createPost()
-})
+  fetchPost();
+  fetchPostsButton();
+  createPost();
+  deletePost();
+});
 
 function fetchPostsButton(){
   $("#fetch-button-posts").on("click", function(){
@@ -120,10 +121,26 @@ function renderPost(post) {
     + post.created_at
     + "</h6><p>"
     + post.description
-    + "</p></div>"
+    + "</p><button id='delete-post' class='btn btn-default btn-xs'>Delete</button></div>"
   )
 }
 
 function deletePost(){
-  
+  // .delegate will let you wait for the event, then use a function on it.
+  $("#latest-posts").delegate("#delete-post", 'click', function(){
+    // jquery elements should have a $. 'this' below is the delete post you are clicking
+    var $post = $(this).closest(".post")
+    // now we need an AJAX REQUEST to delete the post
+    $.ajax({
+      type: "DELETE",
+      url: "https://turing-birdie.herokuapp.com/api/v1/posts/" + $post.attr('data-id') + ".json",
+      // below we have both a success path and an error path
+      success: function() {
+        $post.remove()
+      },
+      error: function(){
+        $post.remove()
+      }
+    })
+  })
 }
